@@ -78,7 +78,7 @@ Given an $N \times M$ matrix $A$ where $A \in \set{ ℕ \cup  ∅ } ^ {N \times 
     [   a_{(0,0)},    & a_{(0,1)},  & a_{(0,2)},  & \dots     & a_{(0,m)}   ],  \\[2pt]
     [   a_{(1,0)},    & a_{(1,1)},  & a_{(1,2)},  & \dots     & a_{(1,m)}   ],  \\[.5pt]
         \vdots        & \vdots      & \vdots      & \ddots    & \vdots          \\[2pt]
-       a_{(n,0)},    & a_{(n,1)},  & a_{(n,2)},  & \dots     & a_{(n,m)}   ]
+    [   a_{(n,0)},    & a_{(n,1)},  & a_{(n,2)},  & \dots     & a_{(n,m)}   ]
 \end{bmatrix}
 ```
 
