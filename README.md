@@ -403,7 +403,7 @@ And there we go. Not only is this 2x as fast but it's advantage increases as $N$
 ## SIMD (TODO)
 
 [^1]: I read often that Rust rewards a more functional approach to collection iterations. This is often the case. However in this example, it made no difference compared to the idiomatic, for-loop, style implementation.
-[^2]: While still fitting comforatbly inside 2 $ \!\times\! $ 8 $ \textsf{\scriptsize{GB}} $, 3733 $ \textsf{\scriptsize{MHz}} $ DDR4
+[^2]: While still fitting comforatbly inside 16GB, 3733MHz DDR4 Memory
 [^3]: I'm leaving out secondary storage from this here on purpose. Perhaps in a future project I can explore secondary memory, disc spilling, file spec and strategy.
 [^4]: Data must be aligned to SIMD lanes for a lot of that instruction set to work. These lanes are cache-aligned, a fact being exploited.
 [^5]: For some reason, I was unable to get this to work as a tuple type. I'm still looking into it.
