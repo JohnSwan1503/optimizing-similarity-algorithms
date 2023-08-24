@@ -28,9 +28,9 @@ The **TL;DR** is a 2x speed up with the cache alignment strategy alone, with gre
 
 ## Problem
 
-Given an $N \times M$ matrix $A$ where $A \in \set{\natnums \cup  \empty}^{N \times M}$ and describes a set of $N$ sequences of size $M$, return distance matrix $D$ by applying some metric $f$ to every pairwise combination of sequences in $A$ assumging:
-$$
-\begin{equation*}
+Given an $N \times M$ matrix $A$ where $A \in \set{ ℕ \cup  ∅ } ^ {N \times M}$ and describes a set of $N$ sequences of size $M$, return distance matrix $D$ by applying some metric $f$ to every pairwise combination of sequences in $A$ assumging:
+
+```math
 \begin{align*}
     &{\large A =}
     \begin{bmatrix}
@@ -38,62 +38,49 @@ $$
         a_{1\,0}    & a_{1\,1}  & \dots     & a_{1\,m}  \\[.5pt]
         \vdots      & \vdots    & \ddots    & \vdots    \\[2pt]
         a_{n\,0}    & a_{n\,1}  & \dots     & a_{n\,m}
-    \end{bmatrix}&
+    \end{bmatrix}
     &{\large D =}
     \begin{bmatrix}
         d_{0\,0}    & d_{0\,1}  & \dots     & d_{0\,n}  \\[2pt]
         d_{1\,0}    & d_{1\,1}  & \dots     & d_{1\,n}  \\[.5pt]
         \vdots      & \vdots    & \ddots    & \vdots    \\[2pt]
         d_{n\,0}    & d_{n\,1}  & \dots     & d_{n\,n}
-    \end{bmatrix}&
+    \end{bmatrix}
 \end{align*}
-\end{equation*}
-\\[20pt]
-\begin{equation*}
-    \begin{align}
-        D &= d(ij)
-        \\[5pt]
-        d:i, j &↦  \sum\limits_{k=1}^{M} {\large\mathcal{f}}(i, j, k) = d_{ij}
-        \\[20pt]
-        f: i, j, k &↦
-        \begin{array}{}
-            \begin{cases}
-                \begin{alignat*}{1}
-                0
-                    & \hspace{15pt}
-                    \textit{if } A_{ik} = 0 \lor A_{jk} = 0,
-                    \\
-                \sum\limits_{\mathcal{A_k}}1_{\{\!A_{ik}\!\}}(x)
-                    & \hspace{15pt}
-                    \textit{if } A_{ik} = A_{jk},
-                    \\[-9pt]
-                n
-                    & \hspace{15pt}
-                    \text{otherwise.}
-            \end{alignat*}
-        \end{cases}
-        \\[20pt]\hspace{-50pt}
-        where: \mathcal{A_k}=\{\!\!\set{\!x \in A_k\!}\!\!\}
-        \end{array}
-    \end{align}  
-\end{equation*}
-$$
+```
+
+```math
+
+\begin{array}{rll}
+    \\[10pt]
+    D &= d(ij) & \\[15pt]
+    d: i, j &\mapsto \sum\limits_{k=1}^{M} \mathcal{f}(i, j, k) = d_{ij} & \\[15pt]
+    \mathcal{f}: i, j, k &\mapsto
+    \left\{
+    \begin{array}{rl}
+    0 & \text{if } A_{ik} = 0 \lor A_{jk} = 0 \\[8pt]
+    \sum\limits_{x \in \mathcal{A}_k} 1_{\{ A_{ik} \}}(x) & \text{if } A_{ik} = A_{jk} \\
+    n & \text{otherwise}
+    \end{array}
+    \right. & \\[10pt]
+    &\hspace{50pt} \text{where } \mathcal{A}_k = \{ x \in A_k \} &
+\end{array}
+
+```
 
 ## Naive Solution
 
 ### Process
 
 1. Treat the feature matrix $A$ as an array of arrays:
-
-    $$
-    {\large A _{\texttt{Vec<Vec<}\_{\texttt{>>}}}  =}
-    \begin{bmatrix}
-        \big[   a_{(0,\,0),}    & a_{(0,\,1),}  & a_{(0,\,2),}  & \dots     & a_{(0,\,m)}   \big],  \\[2pt]
-        \big[   a_{(1,\,0),}    & a_{(1,\,1),}  & a_{(1,\,2),}  & \dots     & a_{(1,\,m)}   \big],  \\[.5pt]
-                \vdots          & \vdots        & \vdots        & \ddots    & \vdots                \\[2pt]
-        \big[   a_{(n,\,0),}    & a_{(n,\,1),}  & a_{(n,\,2),}  & \dots     & a_{(n,\,m)}   \big]   \;
-    \end{bmatrix}
-    $$
+```math
+\begin{bmatrix}
+    [   a_{(0,0)},    & a_{(0,1)},  & a_{(0,2)},  & \dots     & a_{(0,m)}   ],  \\[2pt]
+    [   a_{(1,0)},    & a_{(1,1)},  & a_{(1,2)},  & \dots     & a_{(1,m)}   ],  \\[.5pt]
+        \vdots        & \vdots      & \vdots      & \ddots    & \vdots          \\[2pt]
+       a_{(n,0)},    & a_{(n,1)},  & a_{(n,2)},  & \dots     & a_{(n,m)}   ]
+\end{bmatrix}
+```
 
 2. Calculate the column-wise value counts of A:
 
@@ -176,7 +163,7 @@ It's important to make a mental model about how data flows into, between, and ou
 
 Cache is structured as a series of cache lines. These lines are the smallest (read: only) units of data that can be inserted or removed from cache memory at a time. That means if the data in memory that is being read into cache has a smaller memory footprint than a single cache line's width (in bytes), then extra bits of (possibly junk) data will get read alongside the desired data. If the data's footprint is larger, then it gets split between multiple lines. To complicate things a bit more, cache lines are locked to address locations that are multiples of the width of the cache. To beat this to death a bit here are two examples of how data might be arranged in a cache line.
 
-.
+
 ![Typical Cache Line Scenario](content/cache_5.png)
 ![Ideal Cache Line Scenario](content/cache_4.png)
 
